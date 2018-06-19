@@ -91,3 +91,5 @@ sout = sout.drop(["Weekly_Sales_Backup", "Id_Backup"], axis=1)
 sout.to_csv("submission.csv", index=False)
 ```
 
+## Results from predictions
+Based on weighted mean absolute error(WMAE), points scored in Kaggle is 11126.41686. Please feel free to download, fork, send pull requests and comment on this project.
