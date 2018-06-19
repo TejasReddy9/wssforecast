@@ -20,3 +20,12 @@ As data shouldn't be posted publicly, please refer this [link](https://www.kaggl
 5.  Sample Submission Format.
 
 ## Approach
+*   First, let's read-in data and modify the training and testing data by merging stores data into it. Assuming data is downloaded in the same directory.
+```python
+train = pd.read_csv("train.csv")
+test = pd.read_csv("test.csv")
+stores = pd.read_csv("stores.csv")
+train = train.merge(stores, how="left", on="Store")
+test = test.merge(stores, how="left", on="Store")
+```
+*   
