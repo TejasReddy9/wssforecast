@@ -28,4 +28,22 @@ stores = pd.read_csv("stores.csv")
 train = train.merge(stores, how="left", on="Store")
 test = test.merge(stores, how="left", on="Store")
 ```
+*   A little cleaning, setting index values of the table for the format specified in the sample submission, and added a new column for grouping of the data w.r.t store and department.
+```python
+train["Id"] = train["Store"].astype(str) + "_" + train["Dept"].astype(str) + "_" + train["Date"].astype(str)
+train = train.set_index("Id")
+test["Id"] = test["Store"].astype(str) + "_" + test["Dept"].astype(str) + "_" + test["Date"].astype(str)
+test = test.set_index("Id")
+
+train["store_dep"] = train["Store"].astype(str) + "_" + train["Dept"].astype(str)
+test["store_dep"] = test["Store"].astype(str) + "_" + test["Dept"].astype(str)
+```
+*   Whole problem is divided into subproblems grouped by each department of each store, stored in dictionaries for testing and training data, where keys are the store_dept.
+```python
+traindict = {}
+testdict = {}
+for i in set(test["store_dep"].tolist()):
+    traindict[i] = train[train["store_dep"]==i]
+    testdict[i] = test[test["store_dep"]==i]
+```
 *   
