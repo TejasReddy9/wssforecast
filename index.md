@@ -48,4 +48,46 @@ for i in set(test["store_dep"].tolist()):
     testdict[i] = test[test["store_dep"]==i]
 ```
 
-*   
+*   Now, features are reproduced. Dummies are labelled by creating seerate columns. Don't forget to drop NA entries from both testing and training data. Also, drop those features which exists in training set that doesn't exist in the testing set and vice-versa.
+
+*   For estimator, I hvae used Gradient Boosting Regressor available in scikit-learn package. Refer [documentation](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html). Try more fiddling with the parameters mentioned in the docs. I've used a loss function which follows least squares regression with least absolute deviation solely based on order information of the input variables.
+```python
+estimator = GradientBoostingRegressor(loss="huber")
+def estimates(train, test, splitset):
+    train_x, train_y, test_x = find_features(train, test, splitset)
+    estimator.fit(train_x, train_y)
+    res = pd.DataFrame(index = test_x.index)
+    res["Weekly_Sales"] = estimator.predict(test_x)
+    res["Id"] = res.index
+    return res
+```
+
+*   Actual prediction model is from the subproblems grouped by store_dept. Exceptions are used when I was debugging.
+```python
+out = pd.DataFrame()
+count = 0
+for key in testdict.keys():
+    count+=1
+    try:
+        ot = estimates(traindict[key], testdict[key], True)
+        out = pd.concat([out, ot])
+    except Exception as e:
+        print(str(e))
+    if count%20==0:
+        print("Modelling.... "+ str(100*list(testdict.keys()).index(key)/len(testdict.keys())) +"%")
+```
+
+*   Now, let's play with main data. Let's predict on that, if we find any null values(NA), replace them with the result from subproblems.
+```python
+sout = estimates(train, test, False)
+sout = sout.join(out, how="left", lsuffix="_Backup")
+sout["Weekly_Sales"] = sout["Weekly_Sales"].fillna(sout["Weekly_Sales_Backup"])
+```
+
+*   Finally, output a csv file in the required format.
+```python
+sout["Id"] = sout["Id"].fillna(sout["Id_Backup"])
+sout = sout.drop(["Weekly_Sales_Backup", "Id_Backup"], axis=1)
+sout.to_csv("submission.csv", index=False)
+```
+
