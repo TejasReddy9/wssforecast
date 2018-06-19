@@ -34,7 +34,6 @@ train["Id"] = train["Store"].astype(str) + "_" + train["Dept"].astype(str) + "_"
 train = train.set_index("Id")
 test["Id"] = test["Store"].astype(str) + "_" + test["Dept"].astype(str) + "_" + test["Date"].astype(str)
 test = test.set_index("Id")
-
 train["store_dep"] = train["Store"].astype(str) + "_" + train["Dept"].astype(str)
 test["store_dep"] = test["Store"].astype(str) + "_" + test["Dept"].astype(str)
 ```
