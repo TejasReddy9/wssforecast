@@ -44,8 +44,8 @@ test["store_dep"] = test["Store"].astype(str) + "_" + test["Dept"].astype(str)
 traindict = {}
 testdict = {}
 for i in set(test["store_dep"].tolist()):
-    traindict[i] = train[train["store_dep"]==i]
-    testdict[i] = test[test["store_dep"]==i]
+        traindict[i] = train[train["store_dep"]==i]
+        testdict[i] = test[test["store_dep"]==i]
 ```
 
 *   Now, features are reproduced. Dummies are labelled by creating seerate columns. Don't forget to drop NA entries from both testing and training data. Also, drop those features which exists in training set that doesn't exist in the testing set and vice-versa.
@@ -54,12 +54,12 @@ for i in set(test["store_dep"].tolist()):
 ```python
 estimator = GradientBoostingRegressor(loss="huber")
 def estimates(train, test, splitset):
-    train_x, train_y, test_x = find_features(train, test, splitset)
-    estimator.fit(train_x, train_y)
-    res = pd.DataFrame(index = test_x.index)
-    res["Weekly_Sales"] = estimator.predict(test_x)
-    res["Id"] = res.index
-    return res
+        train_x, train_y, test_x = find_features(train, test, splitset)
+        estimator.fit(train_x, train_y)
+        res = pd.DataFrame(index = test_x.index)
+        res["Weekly_Sales"] = estimator.predict(test_x)
+        res["Id"] = res.index
+        return res
 ```
 
 *   Actual prediction model is from the subproblems grouped by store_dept. Exceptions are used when I was debugging.
@@ -67,14 +67,14 @@ def estimates(train, test, splitset):
 out = pd.DataFrame()
 count = 0
 for key in testdict.keys():
-    count+=1
-    try:
-        ot = estimates(traindict[key], testdict[key], True)
-        out = pd.concat([out, ot])
-    except Exception as e:
-        print(str(e))
-    if count%20==0:
-        print("Modelling.... "+ str(100*list(testdict.keys()).index(key)/len(testdict.keys())) +"%")
+        count+=1
+        try:
+            ot = estimates(traindict[key], testdict[key], True)
+            out = pd.concat([out, ot])
+        except Exception as e:
+            print(str(e))
+        if count%20==0:
+            print("Modelling.... "+ str(100*list(testdict.keys()).index(key)/len(testdict.keys())) +"%")
 ```
 
 *   Now, let's play with main data. Let's predict on that, if we find any null values(NA), replace them with the result from subproblems.
