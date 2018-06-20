@@ -50,7 +50,7 @@ for i in set(test["store_dep"].tolist()):
 
 *   Now, features are reproduced. Dummies are labelled by creating seerate columns. Don't forget to drop NA entries from both testing and training data. Also, drop those features which exists in training set that doesn't exist in the testing set and vice-versa.
 
-*   For estimator, I hvae used Gradient Boosting Regressor available in scikit-learn package. Refer [documentation](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html). Try more fiddling with the parameters mentioned in the docs. I've used a loss function which follows least squares regression with least absolute deviation solely based on order information of the input variables.
+*   For estimator, I have used Gradient Boosting Regressor available in scikit-learn package. Refer [documentation](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html). Try more fiddling with the parameters mentioned in the docs. I've used a loss function which follows least squares regression with least absolute deviation solely based on order information of the input variables.
 ```python
 estimator = GradientBoostingRegressor(loss="huber")
 def estimates(train, test, splitset):
