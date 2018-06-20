@@ -52,40 +52,40 @@ for i in set(test["store_dep"].tolist()):
 ```python
 def find_features(train, test, splitset):
         if splitset==True:
-                def xdums(df):
-                        dums = pd.get_dummies(pd.to_datetime(train["Date"], format="%Y-%m-%d").dt.week)
-                        dums.columns = map(lambda x:"Week_"+str(x), dums.columns.values)
-                        return dums
+            def xdums(df):
+                dums = pd.get_dummies(pd.to_datetime(train["Date"], format="%Y-%m-%d").dt.week)
+                dums.columns = map(lambda x:"Week_"+str(x), dums.columns.values)
+                return dums
         else:
-                def xdums(df):
-                dums = pd.get_dummies(df["Store"])
-                dums = dums.set_index(df.index)
-                dums.columns = map(lambda x: "Store_" + str(x), dums.columns.values)
-                res = dums
-                dums = pd.get_dummies(df["Dept"])
-                dums = dums.set_index(df.index)
-                dums.columns = map(lambda x: "Dept_" + str(x), dums.columns.values)
-                res = res.join(dums)
-                dums = pd.get_dummies(df["Type"])
-                dums = dums.set_index(df.index)
-                dums.columns = map(lambda x: "Type_" + str(x), dums.columns.values)
-                res = res.join(dums)
-                dums = pd.get_dummies(df["Date"])
-                dums = dums.set_index(df.index)
-                dums.columns = map(lambda x: "Week_" + str(x), dums.columns.values)
-                res = res.join(dums)
-                return res
+            def xdums(df):
+            dums = pd.get_dummies(df["Store"])
+            dums = dums.set_index(df.index)
+            dums.columns = map(lambda x: "Store_" + str(x), dums.columns.values)
+            res = dums
+            dums = pd.get_dummies(df["Dept"])
+            dums = dums.set_index(df.index)
+            dums.columns = map(lambda x: "Dept_" + str(x), dums.columns.values)
+            res = res.join(dums)
+            dums = pd.get_dummies(df["Type"])
+            dums = dums.set_index(df.index)
+            dums.columns = map(lambda x: "Type_" + str(x), dums.columns.values)
+            res = res.join(dums)
+            dums = pd.get_dummies(df["Date"])
+            dums = dums.set_index(df.index)
+            dums.columns = map(lambda x: "Week_" + str(x), dums.columns.values)
+            res = res.join(dums)
+            return res
         train_x = xdums(train).join(train[["IsHoliday", "Size", "Year", "Day"]])
         test_x = xdums(test).join(test[["IsHoliday", "Size", "Year", "Day"]])
         train_x = train_x.dropna(axis=1)
         test_x = test_x.dropna(axis=1)
         train_y = train.dropna(axis=1)["Weekly_Sales"]
         for feature in train_x.columns.values:
-                if feature not in test_x.columns.values:
-                        train_x = train_x.drop(feature, axis=1)
+            if feature not in test_x.columns.values:
+                train_x = train_x.drop(feature, axis=1)
         for feature in test_x.columns.values:
-                if feature not in train_x.columns.values:
-                        test_x = test_x.drop(feature, axis=1)
+            if feature not in train_x.columns.values:
+                test_x = test_x.drop(feature, axis=1)
         return train_x, train_y, test_x
 ```
 
