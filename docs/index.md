@@ -49,6 +49,45 @@ for i in set(test["store_dep"].tolist()):
 ```
 
 *   Now, features are reproduced. Dummies are labelled by creating seerate columns. Don't forget to drop NA entries from both testing and training data. Also, drop those features which exists in training set that doesn't exist in the testing set and vice-versa.
+```python
+def find_features(train, test, splitset):
+        if splitset==True:
+                def xdums(df):
+                        dums = pd.get_dummies(pd.to_datetime(train["Date"], format="%Y-%m-%d").dt.week)
+                        dums.columns = map(lambda x:"Week_"+str(x), dums.columns.values)
+                        return dums
+        else:
+                def xdums(df):
+                dums = pd.get_dummies(df["Store"])
+                dums = dums.set_index(df.index)
+                dums.columns = map(lambda x: "Store_" + str(x), dums.columns.values)
+                res = dums
+                dums = pd.get_dummies(df["Dept"])
+                dums = dums.set_index(df.index)
+                dums.columns = map(lambda x: "Dept_" + str(x), dums.columns.values)
+                res = res.join(dums)
+                dums = pd.get_dummies(df["Type"])
+                dums = dums.set_index(df.index)
+                dums.columns = map(lambda x: "Type_" + str(x), dums.columns.values)
+                res = res.join(dums)
+                dums = pd.get_dummies(df["Date"])
+                dums = dums.set_index(df.index)
+                dums.columns = map(lambda x: "Week_" + str(x), dums.columns.values)
+                res = res.join(dums)
+                return res
+        train_x = xdums(train).join(train[["IsHoliday", "Size", "Year", "Day"]])
+        test_x = xdums(test).join(test[["IsHoliday", "Size", "Year", "Day"]])
+        train_x = train_x.dropna(axis=1)
+        test_x = test_x.dropna(axis=1)
+        train_y = train.dropna(axis=1)["Weekly_Sales"]
+        for feature in train_x.columns.values:
+                if feature not in test_x.columns.values:
+                        train_x = train_x.drop(feature, axis=1)
+        for feature in test_x.columns.values:
+                if feature not in train_x.columns.values:
+                        test_x = test_x.drop(feature, axis=1)
+        return train_x, train_y, test_x
+```
 
 *   For estimator, I have used Gradient Boosting Regressor available in scikit-learn package. Refer [documentation](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html). Try more fiddling with the parameters mentioned in the docs. I've used a loss function which follows least squares regression with least absolute deviation solely based on order information of the input variables.
 ```python
